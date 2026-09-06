@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>배틀최강전</title>
+  <style>
+    :root {
+      --gold: #ffd45a;
+      --hot: #ff3d4a;
+      --cyan: #4df0ff;
+      --pink: #ff6ad5;
+      --bg: #07040c;
+      --panel: rgba(8, 6, 16, 0.82);
+      --font-ui: "Malgun Gothic", "Apple SD Gothic Neo", "Segoe UI", sans-serif;
+      --font-num: Consolas, "Cascadia Mono", "Segoe UI", "Malgun Gothic", monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      background:
+        radial-gradient(ellipse at 50% 0%, #3a1020 0%, var(--bg) 55%);
+      color: #ffe8f0;
+      font-family: var(--font-ui);
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+
+    #app {
+      height: 100%;
+      display: grid;
+      grid-template-columns: minmax(180px, 240px) minmax(320px, 1fr);
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+    }
+
+    #playwrap {
+      min-width: 0;
+      height: 100%;
+      display: grid;
+      place-items: center;
+    }
+
+    aside.side {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      background: var(--panel);
+      border: 1px solid rgba(255, 212, 90, 0.28);
+      box-shadow: 0 0 24px rgba(255, 61, 74, 0.12);
+      padding: 8px 8px 6px;
+      overflow: hidden;
+      height: min(94vh, 720px);
+    }
+
+    aside.side header {
+      flex: 0 0 auto;
+      margin-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 212, 90, 0.2);
+      padding-bottom: 8px;
+    }
+
+    aside.side .k {
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      color: var(--gold);
+    }
+
+    aside.side .v {
+      font-size: 15px;
+      font-weight: 800;
+      margin-top: 3px;
+      color: #fff;
+      word-break: keep-all;
+    }
+
+    #colList {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    #colList li {
+      display: grid;
+      grid-template-columns: 26px 1fr;
+      column-gap: 6px;
+      align-items: center;
+      padding: 2px 2px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      opacity: 0.32;
+    }
+
+    #colList li img {
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+      filter: grayscale(1) brightness(0.6);
+    }
+
+    #colList li b {
+      font-size: 11px;
+      font-weight: 700;
+      word-break: keep-all;
+    }
+
+    #colList li em {
+      display: block;
+      font-style: normal;
+      font-size: 9px;
+      color: #9ab;
+      font-weight: 400;
+    }
+
+    #colList li.got { opacity: 1; }
+    #colList li.got img { filter: none; }
+
+    #colList li.current {
+      opacity: 1;
+      background: rgba(255, 212, 90, 0.08);
+      box-shadow: inset 0 0 0 1px rgba(255, 212, 90, 0.4);
+    }
+
+    #colHint {
+      flex: 0 0 auto;
+      margin: 6px 0 0;
+      font-size: 10px;
+      color: #8ab;
+      line-height: 1.35;
+      word-break: keep-all;
+    }
+
+    #btnTts {
+      flex: 0 0 auto;
+      margin-top: 8px;
+      width: 100%;
+      cursor: pointer;
+      border: 1px solid rgba(255, 212, 90, 0.4);
+      background: rgba(0, 0, 0, 0.35);
+      color: #ffd45a;
+      font-family: var(--font-ui);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      padding: 8px 8px;
+    }
+
+    #btnTts:hover, #btnTts:focus {
+      background: rgba(255, 212, 90, 0.16);
+      outline: none;
+    }
+
+    #btnTts.off {
+      color: #8ab;
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    #medals {
+      display: none;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 212, 90, 0.25);
+      min-height: 22px;
+    }
+
+    #medals .medal {
+      width: 16px;
+      height: 18px;
+      clip-path: polygon(50% 0, 92% 22%, 92% 70%, 50% 100%, 8% 70%, 8% 22%);
+      box-shadow: 0 0 6px currentColor;
+    }
+
+    #medals .bronze { background: linear-gradient(180deg, #e0a060, #8a4a18); color: #e0a060; }
+    #medals .silver { background: linear-gradient(180deg, #f0f4ff, #8a93a8); color: #d0d6e4; }
+    #medals .gold { background: linear-gradient(180deg, #fff1a8, #d4a017); color: #ffd45a; }
+    #medals .plat { background: linear-gradient(180deg, #ffffff, #7ad7ff); color: #c8f6ff; }
+
+    #stage {
+      position: relative;
+      box-shadow:
+        0 0 0 1px rgba(255, 61, 74, 0.35),
+        0 0 48px rgba(255, 61, 74, 0.16),
+        0 24px 80px rgba(0, 0, 0, 0.55);
+      background: #000;
+    }
+
+    #c {
+      display: block;
+      image-rendering: auto;
+    }
+
+    #stage.playing { cursor: none; }
+
+    #scan {
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0.06) 0px,
+          rgba(0, 0, 0, 0.06) 1px,
+          transparent 2px,
+          transparent 4px
+        );
+      opacity: 0.4;
+    }
+
+    #vignette {
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.45) 100%);
+    }
+
+    #menus {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, rgba(6, 2, 10, 0.25), rgba(6, 2, 10, 0.62));
+      overflow: hidden;
+    }
+
+    #menus.hidden { display: none; }
+
+    .panel {
+      width: min(96%, 820px);
+      text-align: center;
+      padding: 12px 14px 14px;
+    }
+
+    .logo {
+      font-weight: 800;
+      font-size: 28px;
+      line-height: 0.92;
+      letter-spacing: 0.04em;
+      color: #fff;
+      text-shadow:
+        0 0 12px rgba(255, 61, 74, 0.9),
+        0 0 28px rgba(255, 212, 90, 0.45),
+        0 4px 0 #400;
+    }
+
+    .logo span {
+      display: block;
+      color: var(--gold);
+      font-size: 13px;
+      letter-spacing: 0.28em;
+      margin-top: 6px;
+    }
+
+    .help {
+      margin: 8px 0 6px;
+      text-align: left;
+      font-size: 11px;
+      line-height: 1.55;
+      color: #ffe0ea;
+      background: var(--panel);
+      border: 1px solid rgba(255, 212, 90, 0.28);
+      padding: 8px 10px;
+      word-break: keep-all;
+    }
+
+    .help b { color: var(--gold); font-weight: 700; }
+
+    .btn {
+      cursor: pointer;
+      border: 1px solid var(--gold);
+      background: linear-gradient(180deg, rgba(255, 212, 90, 0.28), rgba(255, 61, 74, 0.12));
+      color: #fff;
+      font-family: var(--font-ui);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.16em;
+      padding: 8px 18px;
+      width: 100%;
+      box-shadow: 0 0 18px rgba(255, 212, 90, 0.18);
+    }
+
+    .btn:hover, .btn:focus {
+      background: linear-gradient(180deg, rgba(255, 212, 90, 0.5), rgba(255, 61, 74, 0.22));
+      outline: none;
+    }
+
+    .btn + .btn { margin-top: 8px; }
+
+    .ghost {
+      border-color: rgba(255, 255, 255, 0.28);
+      background: transparent;
+      box-shadow: none;
+      letter-spacing: 0.12em;
+    }
+
+    .muted { margin-top: 10px; font-size: 12px; color: #8ab; }
+
+    #charGrid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin: 2px 0 8px;
+      padding: 8px 8px 6px;
+      overflow: visible;
+    }
+
+    .char-card {
+      position: relative;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(0, 0, 0, 0.5);
+      padding: 8px 4px 8px;
+      color: #fff;
+      min-height: 0;
+      z-index: 1;
+      transition: transform 0.16s cubic-bezier(0.18, 1.5, 0.28, 1), box-shadow 0.16s, border-color 0.16s, background 0.16s;
+    }
+
+    .char-card img {
+      width: 100%;
+      height: 54px;
+      object-fit: contain;
+      display: block;
+      pointer-events: none;
+      animation: idleBob 1.8s ease-in-out infinite;
+    }
+
+    .char-card .nm {
+      font-size: 11px;
+      font-weight: 800;
+      margin-top: 4px;
+      word-break: keep-all;
+    }
+
+    .char-card .tt {
+      font-size: 9px;
+      color: #9ab;
+      word-break: keep-all;
+    }
+
+    .char-card .say {
+      pointer-events: none;
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 4px);
+      transform: translateX(-50%) scale(0.86);
+      min-width: 120px;
+      max-width: 180px;
+      padding: 6px 8px;
+      background: rgba(8, 6, 14, 0.94);
+      border: 1px solid var(--gold);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.35;
+      word-break: keep-all;
+      opacity: 0;
+      z-index: 9;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+    }
+
+    .char-card .say:after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 100%;
+      margin-left: -5px;
+      border: 5px solid transparent;
+      border-top-color: var(--gold);
+    }
+
+    .char-card:hover,
+    .char-card:focus {
+      transform: scale(1.22) translateY(-10px);
+      z-index: 8;
+      border-color: var(--gold);
+      background: rgba(255, 212, 90, 0.16);
+      box-shadow: 0 10px 28px rgba(255, 212, 90, 0.42);
+      outline: none;
+    }
+
+    .char-card:hover img,
+    .char-card:focus img {
+      animation: hop 0.42s ease-in-out infinite;
+    }
+
+    .char-card:hover .say,
+    .char-card:focus .say {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+      animation: popSay 0.28s cubic-bezier(0.12, 1.4, 0.22, 1);
+    }
+
+    .char-card.on {
+      border-color: var(--gold);
+      background: rgba(255, 212, 90, 0.18);
+      box-shadow: 0 0 18px rgba(255, 212, 90, 0.5);
+    }
+
+    .char-card.say-down .say {
+      bottom: auto;
+      top: calc(100% + 6px);
+    }
+
+    .char-card.say-down .say:after {
+      top: auto;
+      bottom: 100%;
+      border-top-color: transparent;
+      border-bottom-color: var(--gold);
+    }
+
+    @keyframes idleBob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    @keyframes hop {
+      0%, 100% { transform: translateY(0) rotate(-5deg); }
+      50% { transform: translateY(-9px) rotate(5deg); }
+    }
+
+    @keyframes popSay {
+      0% { opacity: 0; transform: translateX(-50%) translateY(8px) scale(0.8); }
+      100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+    }
+
+    #selHint {
+      min-height: 22px;
+      font-size: 14px;
+      color: var(--gold);
+      font-weight: 800;
+      margin: 2px 0 0;
+      word-break: keep-all;
+      text-shadow: 0 0 10px rgba(255, 212, 90, 0.45);
+    }
+
+    #pauseTitle, #overTitle, #champTitle {
+      font-size: 28px;
+      letter-spacing: 0.12em;
+      text-shadow: 0 0 16px var(--hot);
+      font-weight: 800;
+    }
+
+    @media (max-width: 920px) {
+      #app { grid-template-columns: 1fr; }
+      aside.side { display: none; }
+      .logo { font-size: 26px; }
+      #charGrid { grid-template-columns: repeat(3, 1fr); padding-top: 34px; }
+      .char-card:hover, .char-card:focus { transform: scale(1.12) translateY(-6px); }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <aside class="side" id="collection">
+      <header>
+        <div class="k">BOSS COLLECTION</div>
+        <div class="v" id="colCount">0 / 15</div>
+      </header>
+      <ul id="colList"></ul>
+      <div id="medals" aria-label="훈장"></div>
+      <p id="colHint">이긴 캐릭터는 컬렉션에 모입니다. 전부를 채우면 훈장을 받고 컬렉션이 다시 열립니다. 같은 훈장 5개가 모이면 상위 훈장으로 바뀝니다.</p>
+      <button class="btn ghost" id="btnTts" type="button">대사 TTS ON</button>
+    </aside>
+    <div id="playwrap">
+      <div id="stage">
+        <canvas id="c" width="960" height="540"></canvas>
+        <div id="scan"></div>
+        <div id="vignette"></div>
+        <div id="menus">
+          <div id="scrTitle" class="panel">
+            <div class="logo">배틀최강전<span>STRESS BRAWL</span></div>
+            <div class="help">
+              <div><b>이동</b> 마우스 · <b>손/발</b> 왼·우클릭 · <b>위</b>공중 <b>아래</b>그라운드 <b>앞</b>전진 <b>뒤</b>후퇴 · 난입 주의</div>
+            </div>
+            <div id="selHint">카드를 올려봐. 누가 최강이지?</div>
+            <div id="charGrid"></div>
+            <button class="btn" id="btnFight" type="button">출전</button>
+            <button class="btn ghost" id="btnMute" type="button">SOUND ON</button>
+          </div>
+
+          <div id="scrPause" class="panel" hidden>
+            <div id="pauseTitle">PAUSED</div>
+            <p class="muted">Esc 또는 버튼으로 계속</p>
+            <button class="btn" id="btnResume" type="button" style="margin-top:18px">RESUME</button>
+            <button class="btn ghost" id="btnQuit" type="button">TITLE</button>
+          </div>
+
+          <div id="scrOver" class="panel" hidden>
+            <div id="overTitle">K.O.</div>
+            <p class="muted" id="overScore">졌지만, 스트레스는 좀 나갔다.</p>
+            <button class="btn" id="btnRetry" type="button" style="margin-top:18px">REMATCH</button>
+            <button class="btn ghost" id="btnTitle" type="button">TITLE</button>
+          </div>
+
+          <div id="scrChamp" class="panel" hidden>
+            <div id="champTitle">최강 등극</div>
+            <p class="muted" id="champLine">전부 이겼다. 스트레스도 같이 이겼다.</p>
+            <button class="btn" id="btnChamp" type="button" style="margin-top:18px">타이틀</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="js/chars.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>

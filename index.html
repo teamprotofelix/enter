@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EQ오락실 | EQ Arcade</title>
+    <meta name="description" content="심사품질 AI센터가 만든 즐거운 오락실. 배틀최강전, 심사기준 스트라이커 등 게임을 카드로 골라 바로 플레이하세요.">
+    <meta name="theme-color" content="#0a0a23">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="EQ오락실 | EQ Arcade">
+    <meta property="og:description" content="심사품질 AI센터의 오락실 — 배틀최강전·심사기준 스트라이커를 한 곳에서!">
+    <meta property="og:image" content="PGlogo.jpg">
+    <meta property="og:url" content="https://enter.moip.ai.kr">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #05050f;
+            --bg-card: rgba(255, 255, 255, 0.05);
+            --cyan: #00E5FF;
+            --violet: #A78BFA;
+            --magenta: #FF3D9A;
+            --coral: #FF6B6B;
+            --gold: #FFD45A;
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+            --border: rgba(0, 229, 255, 0.28);
+            --nav-h: 64px;
+            --focus: #67e8f9;
+            --radius: 18px;
+            --marquee-dur: 46s;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; scroll-padding-top: calc(var(--nav-h) + 12px); }
+
+        body {
+            font-family: 'Noto Sans KR', system-ui, sans-serif;
+            background: radial-gradient(ellipse at center, #0a0a23 0%, #000 72%);
+            color: var(--text);
+            overflow-x: hidden;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        canvas#canvas {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .skip-link {
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            z-index: 200;
+            padding: 0.75rem 1.2rem;
+            background: var(--cyan);
+            color: #041016;
+            font-weight: 700;
+            text-decoration: none;
+            border-radius: 0 0 8px 0;
+        }
+        .skip-link:focus { left: 0; outline: 3px solid #fff; }
+
+        /* ===== Nav ===== */
+        .site-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            height: var(--nav-h);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 0 1.1rem;
+            background: rgba(5, 5, 15, 0.82);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(0, 229, 255, 0.15);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 800;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+        .nav-brand i {
+            color: var(--magenta);
+            text-shadow: 0 0 14px rgba(255, 61, 154, 0.65);
+        }
+        .nav-brand span {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.78rem;
+            letter-spacing: 0.06em;
+            background: linear-gradient(90deg, var(--cyan), var(--magenta), var(--gold));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 0.15rem;
+            list-style: none;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        .nav-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 600;
+            padding: 0.45rem 0.7rem;
+            border-radius: 999px;
+            transition: color 0.2s, background 0.2s;
+        }
+        .nav-links a:hover,
+        .nav-links a:focus-visible {
+            color: #fff;
+            background: rgba(0, 229, 255, 0.12);
+            outline: none;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+
+        .lang-toggle,
+        .nav-icon-btn {
+            font-family: inherit;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 0.4rem 0.7rem;
+            border-radius: 999px;
+            border: 1px solid rgba(0, 229, 255, 0.35);
+            background: rgba(0, 0, 0, 0.45);
+            color: var(--cyan);
+            cursor: pointer;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .lang-toggle:hover,
+        .nav-icon-btn:hover,
+        .lang-toggle:focus-visible,
+        .nav-icon-btn:focus-visible {
+            border-color: var(--cyan);
+            background: rgba(0, 229, 255, 0.12);
+            outline: none;
+        }
+
+        .nav-toggle {
+            display: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.5);
+            color: var(--cyan);
+            cursor: pointer;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 900px) {
+            .nav-toggle { display: inline-flex; align-items: center; justify-content: center; }
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: var(--nav-h);
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                align-items: stretch;
+                padding: 0.75rem;
+                background: rgba(5, 5, 18, 0.96);
+                border-bottom: 1px solid rgba(0, 229, 255, 0.15);
+            }
+            .site-nav.is-open .nav-links { display: flex; }
+            .nav-links a { padding: 0.75rem 1rem; border-radius: 10px; }
+            .nav-actions .nav-icon-btn.desktop-only { display: none; }
+        }
+
+        /* ===== Hero ===== */
+        header.hero {
+            min-height: 72vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            background-image:
+                radial-gradient(circle at 18% 22%, rgba(255, 61, 154, 0.16), transparent 38%),
+                radial-gradient(circle at 82% 30%, rgba(0, 229, 255, 0.14), transparent 36%),
+                linear-gradient(rgba(5, 5, 20, 0.55), rgba(5, 5, 15, 0.82)), url('PGlogo.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            padding: 3rem 1.25rem 2.5rem;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            background: rgba(0, 0, 0, 0.62);
+            backdrop-filter: blur(14px);
+            padding: 2.4rem 1.8rem 2rem;
+            border-radius: 28px;
+            border: 1px solid rgba(255, 61, 154, 0.25);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75), inset 0 0 40px rgba(255, 61, 154, 0.05);
+            max-width: 820px;
+            width: 100%;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .main-logo {
+            max-width: min(640px, 100%);
+            width: auto;
+            height: auto;
+            max-height: min(42vh, 360px);
+            display: block;
+            margin: 0 auto 1.1rem;
+            object-fit: contain;
+            object-position: center;
+            filter: drop-shadow(0 0 36px rgba(255, 61, 154, 0.55));
+            border-radius: 16px;
+        }
+
+        .main-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.6rem, 5vw, 2.8rem);
+            font-weight: 900;
+            background: linear-gradient(90deg, #00E5FF, #A78BFA, #FF3D9A, #FFD45A);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: glow 2.8s ease-in-out infinite alternate;
+            margin-bottom: 0.7rem;
+            letter-spacing: -0.5px;
+        }
+
+        .header-subtitle {
+            font-size: clamp(1rem, 3vw, 1.25rem);
+            opacity: 0.95;
+            line-height: 1.55;
+            max-width: 640px;
+            margin: 0 auto 1.4rem;
+            color: #e2e8f0;
+        }
+
+        .hero-ctas {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 0.85rem 1.4rem;
+            border-radius: 999px;
+            border: 1px solid transparent;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+            min-height: 48px;
+            color: #fff;
+        }
+        .btn:focus-visible {
+            outline: 3px solid var(--focus);
+            outline-offset: 3px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #FF3D9A, #A78BFA);
+            color: #fff;
+            box-shadow: 0 14px 36px rgba(255, 61, 154, 0.35);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 44px rgba(255, 61, 154, 0.55);
+        }
+        .btn-ghost {
+            background: rgba(0, 0, 0, 0.55);
+            border-color: rgba(0, 229, 255, 0.45);
+        }
+        .btn-ghost:hover {
+            transform: translateY(-2px);
+            border-color: var(--cyan);
+            background: rgba(0, 229, 255, 0.1);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(36px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes glow {
+            0% { filter: drop-shadow(0 0 8px rgba(255, 61, 154, 0.35)); }
+            100% { filter: drop-shadow(0 0 18px rgba(0, 229, 255, 0.75)); }
+        }
+        @keyframes jackpotPulse {
+            0%, 100% { box-shadow: 0 24px 50px rgba(255, 61, 154, 0.2); border-color: rgba(0, 229, 255, 0.55); }
+            50% { box-shadow: 0 0 0 6px rgba(255, 212, 90, 0.85), 0 24px 60px rgba(255, 212, 90, 0.55); border-color: var(--gold); }
+        }
+
+        /* ===== Sections ===== */
+        section {
+            padding: 72px 20px;
+            max-width: 1180px;
+            margin: 0 auto;
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        section.visible { opacity: 1; transform: translateY(0); }
+
+        .section-head {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.55rem, 4vw, 2.35rem);
+            text-align: center;
+            margin-bottom: 0.65rem;
+            background: linear-gradient(90deg, #00E5FF, #00B4D8, #A78BFA, #FF3D9A);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        h2 i { margin-right: 0.35rem; }
+
+        .section-lead {
+            text-align: center;
+            color: var(--muted);
+            font-size: 1.05rem;
+            max-width: 720px;
+            margin: 0 auto 1.75rem;
+        }
+
+        /* ===== Game cards ===== */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.4rem;
+        }
+
+        .game-card {
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            height: 100%;
+            will-change: transform;
+        }
+        .game-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(255, 61, 154, 0.55);
+            box-shadow: 0 24px 50px rgba(255, 61, 154, 0.2);
+        }
+        .game-card:focus-visible {
+            outline: 3px solid var(--focus);
+            outline-offset: 3px;
+        }
+        .game-card.is-jackpot {
+            animation: jackpotPulse 0.9s ease-in-out 3;
+        }
+
+        .game-thumb {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            background: #0a0a23;
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+        /* CRT scanline overlay */
+        .game-thumb::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            pointer-events: none;
+            background: repeating-linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0.035) 0px,
+                rgba(255, 255, 255, 0.035) 1px,
+                transparent 1px,
+                transparent 4px
+            );
+            mix-blend-mode: overlay;
+        }
+
+        /* Generated-image layer (battlecard.jpg / strikercard.jpg).
+           When the file exists it covers the CSS fallback below. */
+        .game-thumb img.thumb-img {
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.45s ease;
+        }
+        .game-card:hover .game-thumb img.thumb-img { transform: scale(1.06); }
+
+        .thumb-fallback {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 0;
+            overflow: hidden;
+        }
+        .thumb-fallback .fb-title {
+            position: absolute;
+            top: 12%;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(1.1rem, 3.4vw, 1.6rem);
+            font-weight: 900;
+            letter-spacing: 0.04em;
+            color: #fff;
+            text-shadow: 0 0 22px rgba(255, 255, 255, 0.6), 0 2px 0 rgba(0, 0, 0, 0.8);
+            z-index: 1;
+        }
+        .thumb-fallback img.fb-sprite {
+            height: 74%;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.6));
+            transition: transform 0.45s ease;
+            margin: 0 -3%;
+        }
+        .game-card:hover .thumb-fallback img.fb-sprite { transform: translateY(-6px) scale(1.04); }
+        .game-card:hover .thumb-fallback img.fb-sprite:nth-child(3) { transition-delay: 0.05s; }
+        .game-card:hover .thumb-fallback img.fb-sprite:nth-child(4) { transition-delay: 0.1s; }
+
+        .thumb-gold { background: radial-gradient(120% 130% at 50% 110%, #6b2a12 0%, #2a0f28 45%, #07040c 100%); }
+        .thumb-cyan { background: radial-gradient(120% 130% at 50% 110%, #0e2a4a 0%, #191033 45%, #03060c 100%); }
+
+        .badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 0.28rem 0.55rem;
+            border-radius: 999px;
+            letter-spacing: 0.02em;
+            z-index: 4;
+        }
+        .badge-live { background: rgba(16, 185, 129, 0.9); color: #fff; }
+        .badge-beta { background: rgba(251, 191, 36, 0.95); color: #1c1917; }
+        .badge-new { background: linear-gradient(135deg, #FF3D9A, #FFD45A); color: #1c1020; }
+
+        .game-body {
+            padding: 1.1rem 1.15rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            gap: 0.45rem;
+        }
+        .game-body h3 {
+            font-size: 1.18rem;
+            font-weight: 800;
+            line-height: 1.35;
+            color: #f8fafc;
+        }
+        .game-body .en {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.72rem;
+            color: var(--magenta);
+            opacity: 0.9;
+            letter-spacing: 0.03em;
+        }
+        .game-body p {
+            font-size: 0.92rem;
+            color: #cbd5e1;
+            flex: 1;
+        }
+        .game-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+            margin-top: 0.25rem;
+        }
+        .chip {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.22rem 0.5rem;
+            border-radius: 999px;
+            background: rgba(0, 229, 255, 0.1);
+            border: 1px solid rgba(0, 229, 255, 0.22);
+            color: #a5f3fc;
+        }
+        .chip.gold-chip {
+            background: rgba(255, 212, 90, 0.1);
+            border-color: rgba(255, 212, 90, 0.3);
+            color: #ffe9a8;
+        }
+        .game-cta {
+            margin-top: 0.55rem;
+            font-weight: 800;
+            font-size: 0.92rem;
+            color: var(--magenta);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            text-shadow: 0 0 12px rgba(255, 61, 154, 0.4);
+        }
+
+        /* Coming soon card */
+        .game-card.coming-soon {
+            opacity: 0.75;
+            cursor: default;
+            pointer-events: auto;
+        }
+        .game-card.coming-soon:hover { transform: none; box-shadow: 0 16px 40px rgba(0,0,0,0.45); border-color: var(--border); }
+        .coming-thumb {
+            aspect-ratio: 16 / 9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            background: repeating-linear-gradient(45deg, rgba(255,255,255,0.025) 0 12px, transparent 12px 24px), #0a0a23;
+            color: var(--muted);
+        }
+        .coming-thumb i { font-size: 2.2rem; opacity: 0.55; }
+        .coming-thumb .coming-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.18em;
+            color: #64748b;
+        }
+
+        /* Random pick toolbar */
+        .game-toolbar {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+        .game-toolbar .btn {
+            font-size: 0.92rem;
+            padding: 0.7rem 1.25rem;
+            min-height: 44px;
+            background: rgba(0, 0, 0, 0.5);
+            border-color: rgba(255, 212, 90, 0.45);
+            color: var(--gold);
+        }
+        .game-toolbar .btn:hover {
+            border-color: var(--gold);
+            background: rgba(255, 212, 90, 0.12);
+            transform: translateY(-2px);
+        }
+
+        /* ===== Character marquee ===== */
+        .marquee-shell {
+            position: relative;
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+        .marquee {
+            display: flex;
+            gap: 1rem;
+            overflow: hidden;
+            padding: 0.5rem 0 0.75rem;
+            -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+        }
+        .marquee-track {
+            display: flex;
+            gap: 1rem;
+            flex-shrink: 0;
+            min-width: 100%;
+            animation: marqueeScroll var(--marquee-dur) linear infinite;
+            will-change: transform;
+        }
+        .marquee[data-paused="true"] .marquee-track { animation-play-state: paused; }
+        .marquee:hover .marquee-track,
+        .marquee:focus-within .marquee-track { animation-play-state: paused; }
+
+        @keyframes marqueeScroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(-100%); }
+        }
+
+        .char-card {
+            flex: 0 0 auto;
+            width: 128px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(0, 229, 255, 0.18);
+            border-radius: 14px;
+            padding: 0.6rem 0.5rem 0.55rem;
+            transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .char-card:hover {
+            border-color: rgba(255, 61, 154, 0.5);
+            background: rgba(255, 61, 154, 0.08);
+            transform: translateY(-4px);
+        }
+        .char-card:focus-visible {
+            outline: 3px solid var(--focus);
+            outline-offset: 2px;
+        }
+        .char-card img {
+            width: 88px;
+            height: 88px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 14px rgba(0, 229, 255, 0.25));
+            transition: filter 0.25s ease;
+        }
+        .char-card:hover img { filter: drop-shadow(0 0 20px rgba(255, 61, 154, 0.5)); }
+        .char-card .c-name {
+            display: block;
+            font-weight: 800;
+            font-size: 0.86rem;
+            margin-top: 0.3rem;
+            color: #f8fafc;
+        }
+        .char-card .c-title {
+            display: block;
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-top: 0.1rem;
+        }
+
+        .marquee-controls {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .marquee-controls .btn {
+            font-size: 0.85rem;
+            padding: 0.55rem 1rem;
+            min-height: 40px;
+            background: rgba(0, 0, 0, 0.5);
+            border-color: rgba(0, 229, 255, 0.4);
+            color: var(--cyan);
+        }
+        .marquee-controls .btn:hover {
+            border-color: var(--cyan);
+            background: rgba(0, 229, 255, 0.1);
+        }
+
+        /* ===== Guide ===== */
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+        .step-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.35rem 1.25rem;
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.4);
+        }
+        .step-num {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            color: var(--gold);
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+        .step-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.45rem;
+        }
+        .step-card p {
+            color: #cbd5e1;
+            font-size: 0.95rem;
+        }
+        .step-card i {
+            color: var(--magenta);
+            text-shadow: 0 0 14px rgba(255, 61, 154, 0.5);
+        }
+
+        /* ===== Footer ===== */
+        footer {
+            text-align: center;
+            padding: 48px 20px 36px;
+            opacity: 0.9;
+            font-size: 0.92rem;
+            background: linear-gradient(to top, #000, transparent);
+            color: #94a3b8;
+        }
+        footer a {
+            color: var(--cyan);
+            text-decoration: none;
+            font-weight: 700;
+        }
+        footer a:hover { text-decoration: underline; }
+        footer a:focus-visible {
+            outline: 3px solid var(--focus);
+            outline-offset: 3px;
+            border-radius: 4px;
+        }
+
+        /* i18n helpers */
+        .i18n-block-en { display: none !important; }
+        html[lang="en"] .i18n-block-ko { display: none !important; }
+        html[lang="en"] .i18n-block-en { display: revert !important; }
+
+        @media (max-width: 768px) {
+            header.hero {
+                min-height: auto;
+                padding-top: 2rem;
+                background-attachment: scroll;
+            }
+            section { padding: 56px 16px; }
+            .hero-ctas .btn { width: 100%; max-width: 360px; }
+            .game-grid { grid-template-columns: 1fr; }
+            .char-card { width: 108px; }
+            .char-card img { width: 72px; height: 72px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            section { opacity: 1; transform: none; }
+            .marquee { overflow-x: auto; }
+            .marquee-track { animation: none; min-width: auto; }
+            .marquee-controls { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <a class="skip-link" href="#games">
+        <span class="i18n-block-ko">게임 목록으로 건너뛰기</span>
+        <span class="i18n-block-en">Skip to games</span>
+    </a>
+
+    <canvas id="canvas" aria-hidden="true"></canvas>
+
+    <nav class="site-nav" id="siteNav" aria-label="주 메뉴">
+        <a class="nav-brand" href="#top">
+            <i class="fas fa-gamepad" aria-hidden="true"></i>
+            <span>EQ ARCADE</span>
+        </a>
+
+        <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navLinks" aria-label="메뉴 열기">
+            <i class="fas fa-bars" aria-hidden="true"></i>
+        </button>
+
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#games" data-nav><span class="i18n-block-ko">게임</span><span class="i18n-block-en">Games</span></a></li>
+            <li><a href="#characters" data-nav><span class="i18n-block-ko">캐릭터</span><span class="i18n-block-en">Characters</span></a></li>
+            <li><a href="#guide" data-nav><span class="i18n-block-ko">이용 안내</span><span class="i18n-block-en">Guide</span></a></li>
+        </ul>
+
+        <div class="nav-actions">
+            <button type="button" class="lang-toggle" id="langToggle" aria-label="Language toggle">KO | EN</button>
+            <a class="nav-icon-btn desktop-only" href="https://eqai.moip.ai.kr" target="_blank" rel="noopener noreferrer" title="심사품질 AI센터로 돌아가기">
+                <i class="fas fa-atom" aria-hidden="true"></i>
+                <span class="i18n-block-ko">메인 센터</span>
+                <span class="i18n-block-en">Main Center</span>
+            </a>
+        </div>
+    </nav>
+
+    <header class="hero" id="top">
+        <div class="hero-content">
+            <img src="PGlogo.jpg" alt="EQ오락실 로고" class="main-logo" decoding="async">
+            <h1 class="main-title">EQ ARCADE</h1>
+            <p class="header-subtitle">
+                <span class="i18n-block-ko">
+                    심사품질 AI센터가 만든 즐거운 오락실.<br>
+                    게임을 고르고, 코인을 넣고, <strong>기록에 도전</strong>하세요!
+                </span>
+                <span class="i18n-block-en">
+                    A joyful arcade by the Examination Quality AI Center.<br>
+                    Pick a game, insert a coin, and <strong>chase the record</strong>!
+                </span>
+            </p>
+            <div class="hero-ctas">
+                <a class="btn btn-primary" href="#games">
+                    <i class="fas fa-gamepad" aria-hidden="true"></i>
+                    <span class="i18n-block-ko">게임 시작</span>
+                    <span class="i18n-block-en">Start Playing</span>
+                </a>
+                <a class="btn btn-ghost" href="#characters">
+                    <i class="fas fa-users" aria-hidden="true"></i>
+                    <span class="i18n-block-ko">캐릭터 구경</span>
+                    <span class="i18n-block-en">Meet the Cast</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Games -->
+    <section id="games" aria-labelledby="games-title">
+        <div class="section-head">
+            <h2 id="games-title"><i class="fas fa-ghost" aria-hidden="true"></i>
+                <span class="i18n-block-ko">오늘의 게임</span>
+                <span class="i18n-block-en">Game Lineup</span>
+            </h2>
+            <p class="section-lead">
+                <span class="i18n-block-ko">카드를 골라 바로 플레이하세요. 게임은 새 탭에서 열립니다.</span>
+                <span class="i18n-block-en">Pick a card and play instantly. Games open in a new tab.</span>
+            </p>
+        </div>
+
+        <div class="game-toolbar">
+            <button type="button" class="btn" id="randomPickBtn">
+                <i class="fas fa-dice" aria-hidden="true"></i>
+                <span class="i18n-block-ko">오늘은 이거다! 무작위 선택</span>
+                <span class="i18n-block-en">Random pick!</span>
+            </button>
+        </div>
+
+        <div class="game-grid" id="gameGrid">
+            <!-- filled by JS from GAMES data -->
+        </div>
+
+        <noscript>
+            <div class="game-grid" style="margin-top:1rem;">
+                <a class="game-card" href="battles/index.html" target="_blank" rel="noopener noreferrer">
+                    <div class="game-thumb thumb-gold">
+                        <span class="badge badge-live">운영 중</span>
+                        <div class="thumb-fallback"><span class="fb-title">배틀최강전</span></div>
+                    </div>
+                    <div class="game-body"><h3>배틀최강전</h3><p>15인의 개성 넘치는 파이터가 펼치는 대전 격투 게임</p></div>
+                </a>
+                <a class="game-card" href="exam_striker/index.html" target="_blank" rel="noopener noreferrer">
+                    <div class="game-thumb thumb-cyan">
+                        <span class="badge badge-live">운영 중</span>
+                        <div class="thumb-fallback"><span class="fb-title">심사기준 스트라이커</span></div>
+                    </div>
+                    <div class="game-body"><h3>심사기준 스트라이커</h3><p>심사기준 OX 퀴즈를 때려잡는 지식 슈팅 게임</p></div>
+                </a>
+            </div>
+        </noscript>
+    </section>
+
+    <!-- Characters -->
+    <section id="characters" aria-labelledby="characters-title">
+        <div class="section-head">
+            <h2 id="characters-title"><i class="fas fa-user-astronaut" aria-hidden="true"></i>
+                <span class="i18n-block-ko">오락실 단골 캐릭터</span>
+                <span class="i18n-block-en">Arcade Regulars</span>
+            </h2>
+            <p class="section-lead">
+                <span class="i18n-block-ko">게임에 등장하는 15인의 단골들입니다. 배틀최강전에서 만나볼 수 있어요.</span>
+                <span class="i18n-block-en">Fifteen regulars from our games — meet them all in Battle Supreme.</span>
+            </p>
+        </div>
+
+        <div class="marquee-shell">
+            <div class="marquee" id="marquee" data-paused="false" aria-label="캐릭터 명단 가로 스크롤">
+                <div class="marquee-track" id="marqueeTrack">
+                    <!-- filled by JS (duplicated for seamless loop) -->
+                </div>
+            </div>
+            <div class="marquee-controls">
+                <button type="button" class="btn" id="marqueeToggle" aria-pressed="false" aria-controls="marquee">
+                    <i class="fas fa-pause" aria-hidden="true"></i>
+                    <span class="i18n-block-ko">스크롤 일시정지</span>
+                    <span class="i18n-block-en">Pause scroll</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Guide -->
+    <section id="guide" aria-labelledby="guide-title">
+        <div class="section-head">
+            <h2 id="guide-title"><i class="fas fa-route" aria-hidden="true"></i>
+                <span class="i18n-block-ko">이용 방법</span>
+                <span class="i18n-block-en">How to Play</span>
+            </h2>
+            <p class="section-lead">
+                <span class="i18n-block-ko">처음 방문이라면 3단계로 시작하세요. 모든 게임은 별도 설치 없이 브라우저에서 바로 실행됩니다.</span>
+                <span class="i18n-block-en">New here? Follow three steps. Every game runs in your browser — no install needed.</span>
+            </p>
+        </div>
+
+        <div class="steps">
+            <article class="step-card">
+                <div class="step-num">STEP 01</div>
+                <h3>
+                    <i class="fas fa-th-large" aria-hidden="true"></i>
+                    <span class="i18n-block-ko"> 게임 선택</span>
+                    <span class="i18n-block-en"> Pick a game</span>
+                </h3>
+                <p>
+                    <span class="i18n-block-ko">게임 카드에서 장르·난이도·설명을 확인하고 클릭합니다. 고민되면 「무작위 선택」을 눌러보세요.</span>
+                    <span class="i18n-block-en">Check genre, difficulty, and description on each card, then click. Undecided? Try random pick.</span>
+                </p>
+            </article>
+            <article class="step-card">
+                <div class="step-num">STEP 02</div>
+                <h3>
+                    <i class="fas fa-keyboard" aria-hidden="true"></i>
+                    <span class="i18n-block-ko"> 조작 확인</span>
+                    <span class="i18n-block-en"> Check controls</span>
+                </h3>
+                <p>
+                    <span class="i18n-block-ko">각 게임 화면에 조작법이 안내되어 있습니다. 배틀최강전은 키보드, 심사기준 스트라이커는 방향키와 슛 버튼을 사용해요.</span>
+                    <span class="i18n-block-en">Controls are shown in each game. Battle Supreme uses the keyboard; Striker uses arrows and the shoot button.</span>
+                </p>
+            </article>
+            <article class="step-card">
+                <div class="step-num">STEP 03</div>
+                <h3>
+                    <i class="fas fa-trophy" aria-hidden="true"></i>
+                    <span class="i18n-block-ko"> 기록 도전</span>
+                    <span class="i18n-block-en"> Chase the record</span>
+                </h3>
+                <p>
+                    <span class="i18n-block-ko">이기고 배우고 즐기세요! 지식은 실력이 되고, 실력은 기록이 됩니다. 새 게임도 계속 준비 중입니다.</span>
+                    <span class="i18n-block-en">Win, learn, and have fun — knowledge becomes skill, skill becomes records. More games are on the way.</span>
+                </p>
+            </article>
+        </div>
+    </section>
+
+    <footer>
+        <p>
+            &copy; 2026
+            <span class="i18n-block-ko">심사품질연구회 AI센터 · TeamProtoFelix 설계 및 공익 서비스</span>
+            <span class="i18n-block-en">Examination Quality Research AI Center · public-interest service by TeamProtoFelix</span>
+        </p>
+        <p style="margin-top: 0.75rem;">
+            <a href="https://eqai.moip.ai.kr" target="_blank" rel="noopener noreferrer">
+                <i class="fas fa-atom" aria-hidden="true"></i>
+                <span class="i18n-block-ko">심사품질 AI센터로 돌아가기</span>
+                <span class="i18n-block-en">Back to EQAI Center</span>
+            </a>
+            ·
+            <a href="#top">
+                <span class="i18n-block-ko">맨 위로</span>
+                <span class="i18n-block-en">Top</span>
+            </a>
+        </p>
+    </footer>
+
+    <script>
+        (function () {
+            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            // ===== Game data (single source of truth) =====
+            const GAMES = [
+                {
+                    id: 'battles',
+                    href: 'battles/index.html',
+                    // 이미지생성프롬프트.txt 참고 — 생성된 카드 이미지(battlecard.jpg)가 있으면
+                    // CSS 콜라주 대신 자동으로 표시됩니다. 없어도 사이트는 정상 동작합니다.
+                    img: 'battlecard.jpg',
+                    badge: 'live',
+                    badgeKo: '운영 중',
+                    badgeEn: 'Live',
+                    titleKo: '배틀최강전',
+                    titleEn: 'Battle Supreme',
+                    enLabel: 'BATTLE SUPREME',
+                    descKo: '15인의 개성 넘치는 파이터가 펼치는 대전 격투 게임. 각자 고유한 기술과 대사를 가진 캐릭터를 골라 최강에 도전하세요!',
+                    descEn: 'A versus fighter starring 15 quirky characters, each with unique moves and lines. Pick your fighter and claim the crown!',
+                    chipsKo: ['대전 격투', '난이도 ★★☆', '1인 플레이'],
+                    chipsEn: ['Fighting', 'Difficulty ★★☆', 'Single player'],
+                    thumbClass: 'thumb-gold',
+                    sprites: [
+                        { src: 'img_character/boss_dana.png', alt: '' },
+                        { src: 'img_character/boss_villain.png', alt: '' },
+                        { src: 'img_character/boss_takgu.png', alt: '' }
+                    ]
+                },
+                {
+                    id: 'striker',
+                    href: 'exam_striker/index.html',
+                    // 이미지생성프롬프트.txt 참고 — 생성된 카드 이미지(strikercard.jpg)가 있으면 자동 표시
+                    img: 'strikercard.jpg',
+                    badge: 'live',
+                    badgeKo: '운영 중',
+                    badgeEn: 'Live',
+                    titleKo: '심사기준 스트라이커',
+                    titleEn: 'Exam Standards Striker',
+                    enLabel: 'EXAM STANDARDS STRIKER',
+                    descKo: '특허·실용신안 심사기준 OX 퀴즈를 슈팅으로 때려잡는 지식 게임. 문제를 맞히며 스테이지를 돌파해 보세요!',
+                    descEn: 'A knowledge shooter that tests you on patent & utility-model exam standards. Strike the right answers to clear stages!',
+                    chipsKo: ['지식 슈팅', '난이도 ★★★', '퀴즈'],
+                    chipsEn: ['Quiz shooter', 'Difficulty ★★★', 'Trivia'],
+                    thumbClass: 'thumb-cyan',
+                    sprites: [
+                        { src: 'img_character/boss_jina.png', alt: '' },
+                        { src: 'img_character/boss_woo.png', alt: '' },
+                        { src: 'img_character/boss_gira.png', alt: '' }
+                    ]
+                }
+            ];
+
+            // ===== Character roster (배틀최강전 등장 캐릭터) =====
+            const CHARACTERS = [
+                { name: '다낚아', title: '그물 천재 낚시꾼', img: 'img_character/boss_dana.png' },
+                { name: '오른손', title: '파괴의 포핸드', img: 'img_character/boss_right.png' },
+                { name: '박엄살', title: '조신한 암살자', img: 'img_character/boss_park.png' },
+                { name: '앞으로빵빵', title: '키 큰 마라토너', img: 'img_character/boss_bang.png' },
+                { name: '남사기관', title: '변화구 마술사', img: 'img_character/boss_namsa.png' },
+                { name: '앙큼기사', title: '앙큼 골퍼', img: 'img_character/boss_golf.png' },
+                { name: '빠뜨렀슈', title: 'OB 애호가', img: 'img_character/boss_beer.png' },
+                { name: '깨발랄지나아C', title: '아이씨 소녀', img: 'img_character/boss_jina.png' },
+                { name: '우정신프로', title: '칭찬 공주', img: 'img_character/boss_woo.png' },
+                { name: '빌런', title: '백발의 연출가', img: 'img_character/boss_villain.png' },
+                { name: '골프보다구찌', title: '그린 위의 구찌왕', img: 'img_character/boss_gucci.png' },
+                { name: '버디요정', title: '회전의 요정', img: 'img_character/boss_buddy.png' },
+                { name: '기라성', title: '젊음이 무기', img: 'img_character/boss_gira.png' },
+                { name: '김탁구', title: '얍실 탁구왕', img: 'img_character/boss_takgu.png' },
+                { name: '커피 친구', title: '봉사 바리스타', img: 'img_character/boss_coffee.png' }
+            ];
+
+            function escapeHtml(s) {
+                return String(s).replace(/[&<>"']/g, function (c) {
+                    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+                });
+            }
+
+            function isExternal(href) {
+                try {
+                    const u = new URL(href, window.location.href);
+                    return u.origin !== window.location.origin;
+                } catch (e) {
+                    return true;
+                }
+            }
+
+            const badgeClass = { live: 'badge-live', beta: 'badge-beta', new: 'badge-new' };
+
+            // ===== Render games =====
+            function renderGames() {
+                const grid = document.getElementById('gameGrid');
+                const lang = document.documentElement.lang === 'en' ? 'en' : 'ko';
+                const title = lang === 'en' ? 'titleEn' : 'titleKo';
+                const desc = lang === 'en' ? 'descEn' : 'descKo';
+                const badge = lang === 'en' ? 'badgeEn' : 'badgeKo';
+                const chips = lang === 'en' ? 'chipsEn' : 'chipsKo';
+                const go = lang === 'en' ? 'INSERT COIN' : '코인 넣고 시작';
+                const opens = lang === 'en' ? ' (opens in new tab)' : ' (새 탭)';
+
+                const cardsHtml = GAMES.map(function (g) {
+                    const spritesHtml = g.sprites.map(function (sp) {
+                        return '<img class="fb-sprite" src="' + sp.src + '" alt="" loading="lazy" decoding="async">';
+                    }).join('');
+                    const chipsHtml = g[chips].map(function (c) {
+                        return '<span class="chip">' + escapeHtml(c) + '</span>';
+                    }).join('');
+                    return (
+                        '<a class="game-card" href="' + g.href + '" target="_blank" rel="noopener noreferrer"' +
+                        ' data-game-id="' + g.id + '" aria-label="' + escapeHtml(g[title]) + ' · ' + escapeHtml(g[badge]) + escapeHtml(opens) + '">' +
+                        '<div class="game-thumb ' + g.thumbClass + '">' +
+                        '<span class="badge ' + (badgeClass[g.badge] || 'badge-live') + '">' + escapeHtml(g[badge]) + '</span>' +
+                        '<img class="thumb-img" src="' + g.img + '" alt="" width="640" height="360" loading="lazy" decoding="async"' +
+                        ' onerror="this.remove()">' +
+                        '<div class="thumb-fallback" aria-hidden="true">' +
+                        '<span class="fb-title">' + escapeHtml(g[title]) + '</span>' +
+                        spritesHtml +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="game-body">' +
+                        '<div class="en">' + escapeHtml(g.enLabel) + '</div>' +
+                        '<h3>' + escapeHtml(g[title]) + '</h3>' +
+                        '<p>' + escapeHtml(g[desc]) + '</p>' +
+                        '<div class="game-meta">' + chipsHtml + '</div>' +
+                        '<div class="game-cta"><i class="fas fa-coins" aria-hidden="true"></i> ' + go + ' →</div>' +
+                        '</div></a>'
+                    );
+                }).join('');
+
+                // 향후 게임 추가를 위한 준비 중 카드 (장식용)
+                const soonLabel = lang === 'en' ? 'COMING SOON' : '준비 중';
+                const soonDesc = lang === 'en' ? 'A new arcade title is in development.' : '새 오락실 게임이 개발 중입니다.';
+                const comingSoonHtml = (
+                    '<div class="game-card coming-soon" aria-hidden="true">' +
+                    '<div class="coming-thumb">' +
+                    '<i class="fas fa-hat-wizard" aria-hidden="true"></i>' +
+                    '<span class="coming-label">' + soonLabel + '</span>' +
+                    '</div>' +
+                    '<div class="game-body">' +
+                    '<div class="en">SLOT 3</div>' +
+                    '<h3>???</h3>' +
+                    '<p>' + soonDesc + '</p>' +
+                    '</div></div>'
+                );
+
+                grid.innerHTML = cardsHtml + comingSoonHtml;
+            }
+
+            // ===== Render character marquee =====
+            function renderCharacters() {
+                const track = document.getElementById('marqueeTrack');
+                const item = function (c, hidden) {
+                    return (
+                        '<a class="char-card" href="#games" data-char="' + escapeHtml(c.name) + '"' +
+                        (hidden ? ' tabindex="-1" aria-hidden="true"' : '') +
+                        ' aria-label="' + escapeHtml(c.name) + ' — ' + escapeHtml(c.title) + '">' +
+                        '<img src="' + c.img + '" alt="" loading="lazy" decoding="async">' +
+                        '<span class="c-name">' + escapeHtml(c.name) + '</span>' +
+                        '<span class="c-title">' + escapeHtml(c.title) + '</span>' +
+                        '</a>'
+                    );
+                };
+                const firstSet = CHARACTERS.map(function (c) { return item(c, false); }).join('');
+                const secondSet = CHARACTERS.map(function (c) { return item(c, true); }).join('');
+                track.innerHTML = firstSet + secondSet;
+            }
+
+            // ===== Random pick =====
+            function randomPick() {
+                const cards = document.querySelectorAll('.game-card[data-game-id]');
+                if (!cards.length) return;
+                const pick = cards[Math.floor(Math.random() * cards.length)];
+                pick.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'center' });
+                pick.classList.remove('is-jackpot');
+                // 재생을 위해 리플로우 강제 후 클래스 재적용
+                void pick.offsetWidth;
+                pick.classList.add('is-jackpot');
+                const lang = document.documentElement.lang;
+                pick.setAttribute('aria-label',
+                    pick.getAttribute('aria-label') + (lang === 'en' ? ' — picked for you!' : ' — 오늘의 선택!'));
+                setTimeout(function () { pick.classList.remove('is-jackpot'); }, 3000);
+            }
+
+            // ===== Marquee pause control =====
+            function setupMarqueeControl() {
+                const marquee = document.getElementById('marquee');
+                const btn = document.getElementById('marqueeToggle');
+                if (reducedMotion || !marquee || !btn) return;
+                btn.addEventListener('click', function () {
+                    const paused = marquee.getAttribute('data-paused') === 'true';
+                    marquee.setAttribute('data-paused', paused ? 'false' : 'true');
+                    btn.setAttribute('aria-pressed', paused ? 'false' : 'true');
+                    btn.innerHTML = (paused
+                        ? '<i class="fas fa-pause" aria-hidden="true"></i> ' + (document.documentElement.lang === 'en' ? 'Pause scroll' : '스크롤 일시정지')
+                        : '<i class="fas fa-play" aria-hidden="true"></i> ' + (document.documentElement.lang === 'en' ? 'Resume scroll' : '스크롤 재생'));
+                });
+            }
+
+            // ===== Mobile nav =====
+            const siteNav = document.getElementById('siteNav');
+            const navToggle = document.getElementById('navToggle');
+            navToggle.addEventListener('click', function () {
+                const open = !siteNav.classList.contains('is-open');
+                siteNav.classList.toggle('is-open', open);
+                navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+                navToggle.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기');
+            });
+            document.querySelectorAll('[data-nav]').forEach(function (a) {
+                a.addEventListener('click', function () {
+                    siteNav.classList.remove('is-open');
+                    navToggle.setAttribute('aria-expanded', 'false');
+                });
+            });
+
+            // ===== Language toggle =====
+            const langToggle = document.getElementById('langToggle');
+            function setLang(lang) {
+                document.documentElement.lang = lang;
+                langToggle.textContent = lang === 'en' ? 'EN | KO' : 'KO | EN';
+                try { localStorage.setItem('moip_lang', lang); } catch (e) {}
+                renderGames();
+            }
+            let savedLang = 'ko';
+            try { savedLang = localStorage.getItem('moip_lang') || 'ko'; } catch (e) {}
+            setLang(savedLang === 'en' ? 'en' : 'ko');
+            langToggle.addEventListener('click', function () {
+                setLang(document.documentElement.lang === 'en' ? 'ko' : 'en');
+            });
+
+            // ===== Scroll reveal =====
+            if (!reducedMotion && 'IntersectionObserver' in window) {
+                const observer = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) entry.target.classList.add('visible');
+                    });
+                }, { threshold: 0.12 });
+                document.querySelectorAll('section').forEach(function (sec) { observer.observe(sec); });
+            } else {
+                document.querySelectorAll('section').forEach(function (sec) { sec.classList.add('visible'); });
+            }
+
+            // ===== Particles (optimized, reduced-motion aware) =====
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let running = true;
+            let rafId = 0;
+
+            function resizeCanvas() {
+                const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                canvas.width = Math.floor(window.innerWidth * dpr);
+                canvas.height = Math.floor(window.innerHeight * dpr);
+                canvas.style.width = window.innerWidth + 'px';
+                canvas.style.height = window.innerHeight + 'px';
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            }
+
+            function createParticles() {
+                const area = window.innerWidth * window.innerHeight;
+                const count = Math.max(40, Math.min(100, Math.floor(area / 18000)));
+                particles = [];
+                for (let i = 0; i < count; i++) {
+                    // 오락실 팔레트: 시안~마젠타~골드
+                    const hues = [190, 200, 210, 320, 330, 45];
+                    particles.push({
+                        x: Math.random() * window.innerWidth,
+                        y: Math.random() * window.innerHeight,
+                        vx: (Math.random() - 0.5) * 0.45,
+                        vy: (Math.random() - 0.5) * 0.45,
+                        r: Math.random() * 1.8 + 0.4,
+                        hue: hues[Math.floor(Math.random() * hues.length)]
+                    });
+                }
+            }
+
+            function tick() {
+                if (!running) return;
+                ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+                for (let i = 0; i < particles.length; i++) {
+                    const p = particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < 0 || p.x > window.innerWidth) p.vx *= -1;
+                    if (p.y < 0 || p.y > window.innerHeight) p.vy *= -1;
+                    ctx.beginPath();
+                    ctx.fillStyle = 'hsla(' + p.hue + ', 80%, 62%, 0.75)';
+                    ctx.shadowColor = 'hsla(' + p.hue + ', 80%, 62%, 0.6)';
+                    ctx.shadowBlur = 8;
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.shadowBlur = 0;
+                if (!reducedMotion) rafId = requestAnimationFrame(tick);
+            }
+
+            resizeCanvas();
+            createParticles();
+            if (reducedMotion) {
+                tick(); // 한 프레임만 정적으로 렌더링
+            } else {
+                rafId = requestAnimationFrame(tick);
+            }
+
+            document.addEventListener('visibilitychange', function () {
+                if (document.hidden) {
+                    running = false;
+                    if (rafId) cancelAnimationFrame(rafId);
+                } else if (!reducedMotion) {
+                    running = true;
+                    rafId = requestAnimationFrame(tick);
+                }
+            });
+
+            window.addEventListener('resize', function () {
+                resizeCanvas();
+                createParticles();
+            });
+
+            // ===== Init =====
+            renderGames();
+            renderCharacters();
+            setupMarqueeControl();
+            document.getElementById('randomPickBtn').addEventListener('click', randomPick);
+        })();
+    </script>
+</body>
+</html>

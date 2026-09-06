@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>심사기준 스트라이커</title>
+  <style>
+    :root {
+      --cyan: #4df0ff;
+      --magenta: #ff3d9a;
+      --gold: #ffd45a;
+      --bg: #03060c;
+      --panel: rgba(6, 10, 22, 0.78);
+      --font-ui: "Malgun Gothic", "Apple SD Gothic Neo", "Segoe UI", sans-serif;
+      --font-display: "Segoe UI", "Malgun Gothic", sans-serif;
+      --font-num: Consolas, "Cascadia Mono", "Segoe UI", "Malgun Gothic", monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: radial-gradient(ellipse at 50% 20%, #12203a 0%, var(--bg) 55%);
+      color: #e8f6ff;
+      font-family: var(--font-ui);
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+
+    #app {
+      height: 100%;
+      display: grid;
+      grid-template-columns: minmax(200px, 260px) minmax(280px, 640px) 150px;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 12px;
+    }
+
+    #playwrap {
+      min-width: 0;
+      height: 100%;
+      display: grid;
+      place-items: center;
+    }
+
+    aside.side {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      background: rgba(4, 8, 18, 0.78);
+      border: 1px solid rgba(77, 240, 255, 0.22);
+      box-shadow: 0 0 24px rgba(0, 0, 0, 0.35);
+      padding: 10px 10px 8px;
+      overflow: hidden;
+    }
+
+    #story {
+      position: relative;
+      height: min(48vh, 400px);
+      padding: 0;
+      background: #070b14;
+    }
+
+    #storyArt {
+      position: absolute;
+      inset: 0;
+      background-position: center 18%;
+      background-repeat: no-repeat;
+      background-size: contain;
+      filter: drop-shadow(0 0 18px rgba(255, 61, 154, 0.35));
+    }
+
+    #storyBanner {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 28px 16px 18px;
+      background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.92) 42%);
+      pointer-events: none;
+    }
+
+    #storyWho {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      color: var(--gold);
+      text-shadow: 0 0 10px rgba(255, 212, 90, 0.6);
+      min-height: 16px;
+    }
+
+    #storyLine {
+      margin-top: 8px;
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1.28;
+      letter-spacing: -0.01em;
+      color: #fff;
+      word-break: keep-all;
+      text-shadow:
+        0 0 14px rgba(255, 61, 154, 0.85),
+        0 3px 0 #000;
+    }
+
+    #storyLine.pop {
+      animation: arcadePop 0.34s cubic-bezier(0.12, 1.4, 0.22, 1);
+    }
+
+    @keyframes arcadePop {
+      0% { transform: translateY(22px) scale(1.28); opacity: 0; filter: blur(6px); }
+      70% { transform: translateY(-2px) scale(1.02); opacity: 1; filter: blur(0); }
+      100% { transform: none; }
+    }
+
+    #collection {
+      height: min(72vh, 580px);
+    }
+
+    aside.side header {
+      flex: 0 0 auto;
+      margin-bottom: 10px;
+      border-bottom: 1px solid rgba(77, 240, 255, 0.18);
+      padding-bottom: 8px;
+    }
+
+    aside.side .k {
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      color: var(--cyan);
+    }
+
+    aside.side .v {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 800;
+      margin-top: 3px;
+      color: #fff;
+      word-break: keep-all;
+    }
+
+    #colList {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    #colList li {
+      display: grid;
+      grid-template-columns: 12px 1fr;
+      column-gap: 6px;
+      align-items: center;
+      padding: 5px 2px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      opacity: 0.38;
+    }
+
+    #colList li b {
+      font-size: 12px;
+      font-weight: 700;
+      word-break: keep-all;
+    }
+
+    #colList li em { display: none; }
+
+    #colList li i {
+      grid-column: 1;
+      grid-row: 1 / 3;
+      align-self: center;
+      width: 10px;
+      height: 10px;
+      border: 1px solid rgba(255, 212, 90, 0.4);
+      background: transparent;
+    }
+
+    #colList li.got {
+      opacity: 1;
+    }
+
+    #colList li.got i {
+      background: var(--gold);
+      box-shadow: 0 0 8px var(--gold);
+    }
+
+    #colList li.current {
+      opacity: 1;
+      background: rgba(77, 240, 255, 0.08);
+      box-shadow: inset 0 0 0 1px rgba(77, 240, 255, 0.35);
+    }
+
+    #colHint {
+      flex: 0 0 auto;
+      margin: 8px 0 0;
+      font-size: 11px;
+      color: #8ab;
+      line-height: 1.45;
+      word-break: keep-all;
+    }
+
+    #medals {
+      display: none;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 212, 90, 0.25);
+      min-height: 22px;
+    }
+
+    #medals .medal {
+      width: 16px;
+      height: 18px;
+      clip-path: polygon(50% 0, 92% 22%, 92% 70%, 50% 100%, 8% 70%, 8% 22%);
+      box-shadow: 0 0 6px currentColor;
+    }
+
+    #medals .bronze { background: linear-gradient(180deg, #e0a060, #8a4a18); color: #e0a060; }
+    #medals .silver { background: linear-gradient(180deg, #f0f4ff, #8a93a8); color: #d0d6e4; }
+    #medals .gold { background: linear-gradient(180deg, #fff1a8, #d4a017); color: #ffd45a; }
+    #medals .plat { background: linear-gradient(180deg, #ffffff, #7ad7ff); color: #c8f6ff; }
+
+    @media (max-width: 920px) {
+      #app { grid-template-columns: 1fr; }
+      aside.side { display: none; }
+    }
+
+    #stage {
+      position: relative;
+      box-shadow:
+        0 0 0 1px rgba(77, 240, 255, 0.22),
+        0 0 48px rgba(77, 240, 255, 0.12),
+        0 24px 80px rgba(0, 0, 0, 0.55);
+      background: #000;
+    }
+
+    #c {
+      display: block;
+      image-rendering: auto;
+    }
+
+    #stage.playing { cursor: none; }
+
+    #scan {
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(0, 0, 0, 0.07) 0px,
+          rgba(0, 0, 0, 0.07) 1px,
+          transparent 2px,
+          transparent 4px
+        );
+      mix-blend-mode: multiply;
+      opacity: 0.45;
+    }
+
+    #vignette {
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 52%, rgba(0, 0, 0, 0.42) 100%);
+    }
+
+    #hud {
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      padding: 10px 12px 12px;
+      display: none;
+      font-family: var(--font-display);
+    }
+
+    #hud.on { display: block; }
+
+    .hud-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .stat {
+      text-shadow: 0 0 8px rgba(77, 240, 255, 0.45), 0 2px 0 #000;
+    }
+
+    .stat .k {
+      font-size: 9px;
+      letter-spacing: 0.22em;
+      color: var(--cyan);
+      opacity: 0.85;
+    }
+
+    .stat .v {
+      font-family: var(--font-num);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      margin-top: 1px;
+    }
+
+    .stat.right { text-align: right; }
+
+    #chain {
+      position: absolute;
+      left: 50%;
+      top: 42px;
+      transform: translateX(-50%);
+      font-family: var(--font-display);
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      color: var(--gold);
+      text-shadow: 0 0 12px rgba(255, 212, 90, 0.7);
+      opacity: 0;
+      transition: opacity 0.12s;
+    }
+
+    #chain.on { opacity: 1; }
+
+    #lives, #bombs {
+      position: absolute;
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      color: #9ad;
+    }
+
+    #lives { left: 12px; bottom: 14px; }
+    #bombs { right: 12px; bottom: 14px; }
+
+    .pip {
+      width: 10px;
+      height: 10px;
+      clip-path: polygon(50% 0, 100% 35%, 82% 100%, 18% 100%, 0 35%);
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+    }
+
+    .pip.bomb {
+      clip-path: none;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 8px var(--gold);
+    }
+
+    #power {
+      position: absolute;
+      left: 50%;
+      bottom: 12px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 4px;
+    }
+
+    #power i {
+      width: 18px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.12);
+      box-shadow: inset 0 0 0 1px rgba(77, 240, 255, 0.25);
+    }
+
+    #power i.on {
+      background: linear-gradient(90deg, var(--cyan), #fff);
+      box-shadow: 0 0 8px var(--cyan);
+    }
+
+    #menus {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(180deg, rgba(2, 6, 16, 0.2), rgba(2, 6, 16, 0.55));
+    }
+
+    #menus.hidden { display: none; }
+
+    .panel {
+      width: min(90%, 380px);
+      text-align: center;
+      padding: 28px 22px 24px;
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 42px;
+      line-height: 0.92;
+      letter-spacing: 0.08em;
+      color: #fff;
+      text-shadow:
+        0 0 12px rgba(77, 240, 255, 0.8),
+        0 0 28px rgba(255, 61, 154, 0.45);
+    }
+
+    .logo span {
+      display: block;
+      color: var(--cyan);
+    }
+
+    .tag {
+      margin-top: 10px;
+      font-size: 13px;
+      letter-spacing: 0.28em;
+      color: var(--magenta);
+      text-transform: uppercase;
+    }
+
+    .help {
+      margin: 22px 0 8px;
+      text-align: left;
+      font-size: 13px;
+      line-height: 1.75;
+      color: #c9e7ff;
+      background: var(--panel);
+      border: 1px solid rgba(77, 240, 255, 0.22);
+      padding: 12px 14px;
+      word-break: keep-all;
+      overflow-wrap: break-word;
+    }
+
+    .help b { color: var(--cyan); font-weight: 700; }
+
+    .hiscore {
+      margin: 10px 0 18px;
+      font-family: var(--font-num);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      color: var(--gold);
+    }
+
+    .btn {
+      cursor: pointer;
+      border: 1px solid var(--cyan);
+      background: linear-gradient(180deg, rgba(77, 240, 255, 0.18), rgba(77, 240, 255, 0.04));
+      color: #fff;
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      padding: 12px 22px;
+      width: 100%;
+      box-shadow: 0 0 18px rgba(77, 240, 255, 0.18);
+    }
+
+    .btn:hover, .btn:focus {
+      background: linear-gradient(180deg, rgba(77, 240, 255, 0.4), rgba(77, 240, 255, 0.12));
+      outline: none;
+    }
+
+    .btn + .btn { margin-top: 8px; }
+
+    .ghost {
+      border-color: rgba(255, 255, 255, 0.28);
+      background: transparent;
+      box-shadow: none;
+      letter-spacing: 0.12em;
+    }
+
+    #pauseTitle, #overTitle {
+      font-family: var(--font-display);
+      font-size: 28px;
+      letter-spacing: 0.16em;
+      text-shadow: 0 0 16px var(--magenta);
+    }
+
+    .muted { margin-top: 10px; font-size: 12px; color: #8ab; }
+
+    #toast {
+      pointer-events: none;
+      position: absolute;
+      left: 50%;
+      top: 36%;
+      transform: translate(-50%, -50%);
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 30px;
+      letter-spacing: 0.08em;
+      color: #fff;
+      text-shadow: 0 0 18px var(--magenta);
+      opacity: 0;
+      transition: opacity 0.15s;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    #toast.show { opacity: 1; }
+    #toast.ok {
+      color: #b8fbff;
+      text-shadow: 0 0 22px rgba(77, 240, 255, 1), 0 3px 0 #000;
+    }
+    #toast.bad {
+      color: #ffd0ea;
+      text-shadow: 0 0 22px rgba(255, 61, 154, 1), 0 3px 0 #000;
+    }
+
+    #quizBanner {
+      display: none;
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      top: 84px;
+      pointer-events: none;
+      text-align: center;
+      z-index: 5;
+    }
+
+    #quizBanner.on { display: block; }
+
+    #quizBanner .k {
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      color: var(--gold);
+      text-shadow: 0 0 8px rgba(255, 212, 90, 0.7);
+    }
+
+    #quizBanner .q {
+      margin-top: 5px;
+      font-size: 15px;
+      font-weight: 800;
+      line-height: 1.45;
+      word-break: keep-all;
+      color: #fff;
+      text-shadow: 0 0 12px rgba(77, 240, 255, 0.8), 0 2px 0 #000;
+      background: rgba(3, 8, 18, 0.78);
+      border: 1px solid rgba(77, 240, 255, 0.4);
+      padding: 10px 12px;
+    }
+
+    #quizBanner .count {
+      margin-top: 6px;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+      text-shadow: 0 0 16px rgba(255, 212, 90, 0.9);
+      min-height: 32px;
+    }
+
+    #quizBanner .verdict {
+      margin-top: 8px;
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-shadow: 0 3px 0 #000;
+    }
+
+    #quizBanner.ok .q { border-color: rgba(77, 240, 255, 0.85); box-shadow: 0 0 16px rgba(77, 240, 255, 0.35); }
+    #quizBanner.ok .verdict { color: var(--cyan); text-shadow: 0 0 16px rgba(77, 240, 255, 0.95), 0 3px 0 #000; }
+    #quizBanner.ok .count { color: var(--cyan); }
+    #quizBanner.bad .q, #quizBanner.timeout .q { border-color: rgba(255, 61, 154, 0.85); box-shadow: 0 0 16px rgba(255, 61, 154, 0.35); }
+    #quizBanner.bad .verdict, #quizBanner.timeout .verdict { color: var(--magenta); text-shadow: 0 0 16px rgba(255, 61, 154, 0.95), 0 3px 0 #000; }
+    #quizBanner.bad .count, #quizBanner.timeout .count { color: #ffd0ea; }
+
+    #formName {
+      position: absolute;
+      left: 50%;
+      bottom: 26px;
+      transform: translateX(-50%);
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      color: var(--cyan);
+      text-shadow: 0 0 8px rgba(77, 240, 255, 0.7);
+      white-space: nowrap;
+    }
+
+    #eventTag {
+      position: absolute;
+      left: 50%;
+      top: 78px;
+      transform: translateX(-50%);
+      font-family: var(--font-display);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      color: var(--magenta);
+      text-shadow: 0 0 10px rgba(255, 61, 154, 0.8);
+      opacity: 0;
+      white-space: nowrap;
+    }
+
+    #eventTag.on { opacity: 1; }
+
+    #bossbar {
+      display: none;
+      position: absolute;
+      left: 40px;
+      right: 40px;
+      top: 62px;
+      height: 8px;
+      padding-top: 0;
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 1px rgba(255, 61, 154, 0.45);
+    }
+
+    #bossbar.on { display: block; }
+
+    #bossName {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: -16px;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: #ffd0ea;
+      text-shadow: 0 0 8px rgba(255, 61, 154, 0.7);
+    }
+
+    #bossbar > i {
+      display: block;
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, var(--magenta), #ffd0ea);
+      transform-origin: left center;
+    }
+
+    @media (max-width: 640px) {
+      .logo { font-size: 26px; }
+      .help { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <aside class="side" id="story">
+      <div id="storyArt"></div>
+      <div id="storyBanner">
+        <div id="storyWho">심사기준 스트라이커</div>
+        <div id="storyLine">정답 글자를 먹어라</div>
+      </div>
+    </aside>
+    <div id="playwrap">
+    <div id="stage">
+      <canvas id="c" width="480" height="720"></canvas>
+      <div id="scan"></div>
+      <div id="vignette"></div>
+
+      <div id="hud">
+        <div class="hud-row">
+          <div class="stat">
+            <div class="k">SCORE</div>
+            <div class="v" id="score">0000000</div>
+          </div>
+          <div class="stat right">
+            <div class="k">HI-SCORE</div>
+            <div class="v" id="hi">0000000</div>
+          </div>
+        </div>
+        <div id="chain">CHAIN 0</div>
+        <div id="eventTag"></div>
+        <div id="bossbar"><div id="bossName"></div><i id="bossfill"></i></div>
+        <div id="lives">
+          <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+          <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+        </div>
+        <div id="power"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div id="quizBanner"><div class="k">심사기준 OX</div><div class="q"></div></div>
+        <div id="formName">STRIKER</div>
+        <div id="bombs">
+          <div class="pip bomb"></div><div class="pip bomb"></div><div class="pip bomb"></div>
+          <div class="pip bomb"></div><div class="pip bomb"></div><div class="pip bomb"></div>
+        </div>
+      </div>
+
+      <div id="toast"></div>
+
+      <div id="menus">
+        <div id="scrTitle" class="panel">
+          <div class="logo">심사기준<span>STRIKER</span></div>
+          <div class="tag">patent exam arcade</div>
+          <div class="help">
+            <div><b>이동</b> WASD · 방향키 · 마우스/터치</div>
+            <div><b>저속</b> Shift</div>
+            <div><b>폭탄</b> X · Z · Space · 우클릭</div>
+            <div><b>일시정지</b> Esc · P</div>
+            <div>사격은 자동입니다. 피격은 기체 코어만 해당됩니다.</div>
+            <div><b>변신</b> 보라색 캡슐 아이템</div>
+            <div>오른쪽은 보스 컬렉션입니다.</div>
+            <div><b>학습</b> 문제를 읽고, 움직이는 정답 글자를 먹는다</div>
+          </div>
+          <div class="hiscore" id="titleHi">HI-SCORE 0000000</div>
+          <button class="btn" id="btnStart" type="button">START</button>
+          <button class="btn ghost" id="btnMute" type="button">SOUND ON</button>
+        </div>
+
+        <div id="scrPause" class="panel" hidden>
+          <div id="pauseTitle">PAUSED</div>
+          <p class="muted">Esc 또는 버튼으로 계속</p>
+          <button class="btn" id="btnResume" type="button" style="margin-top:18px">RESUME</button>
+          <button class="btn ghost" id="btnQuit" type="button">TITLE</button>
+        </div>
+
+        <div id="scrOver" class="panel" hidden>
+          <div id="overTitle">GAME OVER</div>
+          <p class="muted" id="overScore">SCORE 0</p>
+          <button class="btn" id="btnRetry" type="button" style="margin-top:18px">RETRY</button>
+          <button class="btn ghost" id="btnTitle" type="button">TITLE</button>
+        </div>
+      </div>
+    </div>
+    </div>
+    <aside class="side" id="collection">
+      <header>
+        <div class="k">BOSS COLLECTION</div>
+        <div class="v" id="colCount">0 / 14</div>
+      </header>
+      <ul id="colList"></ul>
+      <div id="medals" aria-label="훈장"></div>
+      <p id="colHint">전부를 채우면 훈장을 받고 컬렉션이 초기화됩니다. 같은 훈장 5개가 모이면 상위 훈장으로 바뀝니다.</p>
+    </aside>
+  </div>
+  <script src="js/sprites.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/bosses.js"></script>
+  <script src="js/quiz.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
