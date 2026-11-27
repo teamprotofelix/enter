@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EQ오락실 | EQ Arcade</title>
-    <meta name="description" content="심사품질 AI센터가 만든 즐거운 오락실. 배틀최강전, 심사기준 스트라이커 등 게임을 카드로 골라 바로 플레이하세요.">
+    <meta name="description" content="심사품질 AI센터가 만든 즐거운 오락실. 대전 격투, 특허심사 퍼즐, 카페 운영과 낚시 등 7개 게임을 카드로 골라 플레이하세요.">
     <meta name="theme-color" content="#0a0a23">
 
     <meta property="og:type" content="website">
     <meta property="og:title" content="EQ오락실 | EQ Arcade">
-    <meta property="og:description" content="심사품질 AI센터의 오락실 — 배틀최강전·심사기준 스트라이커를 한 곳에서!">
+    <meta property="og:description" content="심사품질 AI센터의 오락실. 대전 격투, 특허심사 퍼즐, 카페 운영과 낚시 등 7개 게임을 한 곳에서 즐겨보세요.">
     <meta property="og:image" content="PGlogo.jpg">
     <meta property="og:url" content="https://enter.moip.ai.kr">
     <meta name="twitter:card" content="summary_large_image">
@@ -418,7 +418,7 @@
             mix-blend-mode: overlay;
         }
 
-        /* Generated-image layer (battlecard.jpg / strikercard.jpg).
+        /* Game cover artwork.
            When the file exists it covers the CSS fallback below. */
         .game-thumb img.thumb-img {
             position: absolute;
@@ -539,31 +539,6 @@
             align-items: center;
             gap: 0.35rem;
             text-shadow: 0 0 12px rgba(255, 61, 154, 0.4);
-        }
-
-        /* Coming soon card */
-        .game-card.coming-soon {
-            opacity: 0.75;
-            cursor: default;
-            pointer-events: auto;
-        }
-        .game-card.coming-soon:hover { transform: none; box-shadow: 0 16px 40px rgba(0,0,0,0.45); border-color: var(--border); }
-        .coming-thumb {
-            aspect-ratio: 16 / 9;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 0.6rem;
-            background: repeating-linear-gradient(45deg, rgba(255,255,255,0.025) 0 12px, transparent 12px 24px), #0a0a23;
-            color: var(--muted);
-        }
-        .coming-thumb i { font-size: 2.2rem; opacity: 0.55; }
-        .coming-thumb .coming-label {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.8rem;
-            letter-spacing: 0.18em;
-            color: #64748b;
         }
 
         /* Random pick toolbar */
@@ -766,6 +741,12 @@
             .marquee-controls { display: none; }
         }
     </style>
+    <noscript>
+        <style>
+            #games { opacity: 1; transform: none; }
+            #randomPickBtn { display: none; }
+        </style>
+    </noscript>
 </head>
 <body>
     <a class="skip-link" href="#games">
@@ -870,6 +851,36 @@
                         <div class="thumb-fallback"><span class="fb-title">심사기준 스트라이커</span></div>
                     </div>
                     <div class="game-body"><h3>심사기준 스트라이커</h3><p>심사기준 OX 퀴즈를 때려잡는 지식 슈팅 게임</p></div>
+                </a>
+                <a class="game-card" href="https://game-skills.moip.ai.kr/" target="_blank" rel="noopener noreferrer">
+                    <div class="game-thumb thumb-cyan">
+                        <img class="thumb-img" src="img_game/skill-core.webp" alt="" width="1280" height="720" loading="lazy" decoding="async">
+                    </div>
+                    <div class="game-body"><h3>마리의 SKILL CORE: 데이터 방어전</h3><p>마리와 함께 7개 작전 구역의 데이터 게이트를 돌파하며 AI 품질진단의 구조를 배워보세요.</p></div>
+                </a>
+                <a class="game-card" href="https://game-pe-vs.moip.ai.kr/" target="_blank" rel="noopener noreferrer">
+                    <div class="game-thumb thumb-cyan">
+                        <img class="thumb-img" src="img_game/rejection-legion.webp" alt="" width="1280" height="720" loading="lazy" decoding="async">
+                    </div>
+                    <div class="game-body"><h3>심사관 VS 거절이유 군단</h3><p>심사관을 선택하고 몰려오는 오류의 군단에 맞서 심사품질을 지키세요.</p></div>
+                </a>
+                <a class="game-card" href="https://game-pe-puzzle.moip.ai.kr/" target="_blank" rel="noopener noreferrer">
+                    <div class="game-thumb thumb-cyan">
+                        <img class="thumb-img" src="img_game/claim-match.webp" alt="" width="1280" height="720" loading="lazy" decoding="async">
+                    </div>
+                    <div class="game-body"><h3>Claim Match: 청구항 퍼즐</h3><p>같은 타일을 세 개 이상 맞춰 4개 월드와 40개 스테이지를 모험하세요.</p></div>
+                </a>
+                <a class="game-card" href="https://game-cafebara.moip.ai.kr/" target="_blank" rel="noopener noreferrer">
+                    <div class="game-thumb thumb-gold">
+                        <img class="thumb-img" src="img_game/cafe-bara.webp" alt="" width="1280" height="720" loading="lazy" decoding="async">
+                    </div>
+                    <div class="game-body"><h3>Cafe BARA: 작은 카페의 하루</h3><p>카피바라 바라와 함께 커피와 디저트를 만들어 손님에게 내고, 새로운 메뉴를 열어보세요.</p></div>
+                </a>
+                <a class="game-card" href="https://game-cafebara-danaka.moip.ai.kr/" target="_blank" rel="noopener noreferrer">
+                    <div class="game-thumb thumb-cyan">
+                        <img class="thumb-img" src="img_game/cafe-bara-danaka.webp" alt="" width="1280" height="720" loading="lazy" decoding="async">
+                    </div>
+                    <div class="game-body"><h3>카페바라-다낚아!</h3><p>바라와 함께 세계 8곳의 낚시터를 여행하며 33종 어류 도감을 채워보세요.</p></div>
                 </a>
             </div>
         </noscript>
@@ -1027,6 +1038,81 @@
                         { src: 'img_character/boss_woo.png', alt: '' },
                         { src: 'img_character/boss_gira.png', alt: '' }
                     ]
+                },
+                {
+                    id: 'skill-core',
+                    href: 'https://game-skills.moip.ai.kr/',
+                    img: 'img_game/skill-core.webp',
+                    badge: 'new',
+                    badgeKo: '신규',
+                    badgeEn: 'New',
+                    titleKo: '마리의 SKILL CORE: 데이터 방어전',
+                    titleEn: 'SKILL CORE: Data Defense',
+                    descKo: '마리와 함께 7개 작전 구역의 데이터 게이트를 돌파하며 AI 품질진단의 구조를 배워보세요.',
+                    descEn: 'Guide Marie through data gates across seven zones and learn how the AI quality review system works.',
+                    chipsKo: ['교육 아케이드', '시간제 퀴즈'],
+                    chipsEn: ['Learning arcade', 'Timed quiz'],
+                    thumbClass: 'thumb-cyan'
+                },
+                {
+                    id: 'rejection-legion',
+                    href: 'https://game-pe-vs.moip.ai.kr/',
+                    img: 'img_game/rejection-legion.webp',
+                    badge: 'new',
+                    badgeKo: '신규',
+                    badgeEn: 'New',
+                    titleKo: '심사관 VS 거절이유 군단',
+                    titleEn: 'Patent Examiner: Rejection Legion',
+                    descKo: '심사관을 선택하고 몰려오는 오류의 군단에 맞서 심사품질을 지키세요.',
+                    descEn: 'Choose an examiner and defend examination quality against waves of monsters.',
+                    chipsKo: ['생존 액션', '판타지'],
+                    chipsEn: ['Survival action', 'Fantasy'],
+                    thumbClass: 'thumb-cyan'
+                },
+                {
+                    id: 'claim-match',
+                    href: 'https://game-pe-puzzle.moip.ai.kr/',
+                    img: 'img_game/claim-match.webp',
+                    badge: 'new',
+                    badgeKo: '신규',
+                    badgeEn: 'New',
+                    titleKo: 'Claim Match: 청구항 퍼즐',
+                    titleEn: 'Claim Match: Patent Puzzle Saga',
+                    descKo: '같은 타일을 세 개 이상 맞춰 4개 월드와 40개 스테이지를 모험하세요.',
+                    descEn: 'Match three or more tiles in a fantasy puzzle RPG with four worlds and 40 stages.',
+                    chipsKo: ['매치 3', '퍼즐 RPG'],
+                    chipsEn: ['Match 3', 'Puzzle RPG'],
+                    thumbClass: 'thumb-cyan'
+                },
+                {
+                    id: 'cafe-bara',
+                    href: 'https://game-cafebara.moip.ai.kr/',
+                    img: 'img_game/cafe-bara.webp',
+                    badge: 'new',
+                    badgeKo: '신규',
+                    badgeEn: 'New',
+                    titleKo: 'Cafe BARA: 작은 카페의 하루',
+                    titleEn: 'Cafe BARA: A Day at the Café',
+                    descKo: '카피바라 바라와 함께 커피와 디저트를 만들어 손님에게 내고, 새로운 메뉴를 열어보세요.',
+                    descEn: 'Make coffee and desserts with Bara the capybara, serve customers, and unlock new recipes.',
+                    chipsKo: ['카페 운영', '레시피'],
+                    chipsEn: ['Café simulation', 'Recipes'],
+                    thumbClass: 'thumb-gold'
+                },
+                {
+                    id: 'cafe-bara-danaka',
+                    href: 'https://game-cafebara-danaka.moip.ai.kr/',
+                    img: 'img_game/cafe-bara-danaka.webp',
+                    badge: 'new',
+                    badgeKo: '신규',
+                    badgeEn: 'New',
+                    titleKo: '카페바라-다낚아!',
+                    titleEn: 'Cafe BARA: World Fishing Collection',
+                    descKo: '바라와 함께 세계 8곳의 낚시터를 여행하며 33종 어류 도감을 채워보세요.',
+                    descEn: 'Travel with Bara to eight fishing locations and fill your collection with 33 fish species.',
+                    chipsKo: ['힐링 낚시', '어류 수집'],
+                    chipsEn: ['Relaxing fishing', 'Fish collection'],
+                    thumbClass: 'thumb-cyan'
                 }
             ];
 
@@ -1074,11 +1160,15 @@
                 const desc = lang === 'en' ? 'descEn' : 'descKo';
                 const badge = lang === 'en' ? 'badgeEn' : 'badgeKo';
                 const chips = lang === 'en' ? 'chipsEn' : 'chipsKo';
-                const go = lang === 'en' ? 'INSERT COIN' : '코인 넣고 시작';
+                const arcadeGo = lang === 'en' ? 'INSERT COIN' : '코인 넣고 시작';
+                const externalGo = lang === 'en' ? 'PLAY GAME' : '게임 바로가기';
                 const opens = lang === 'en' ? ' (opens in new tab)' : ' (새 탭)';
 
                 const cardsHtml = GAMES.map(function (g) {
-                    const spritesHtml = g.sprites.map(function (sp) {
+                    const external = g.href.startsWith('https://');
+                    const go = external ? externalGo : arcadeGo;
+                    const icon = external ? 'fa-up-right-from-square' : 'fa-coins';
+                    const spritesHtml = (g.sprites || []).map(function (sp) {
                         return '<img class="fb-sprite" src="' + sp.src + '" alt="" loading="lazy" decoding="async">';
                     }).join('');
                     const chipsHtml = g[chips].map(function (c) {
@@ -1097,32 +1187,16 @@
                         '</div>' +
                         '</div>' +
                         '<div class="game-body">' +
-                        '<div class="en">' + escapeHtml(g.enLabel) + '</div>' +
+                        (g.enLabel ? '<div class="en">' + escapeHtml(g.enLabel) + '</div>' : '') +
                         '<h3>' + escapeHtml(g[title]) + '</h3>' +
                         '<p>' + escapeHtml(g[desc]) + '</p>' +
                         '<div class="game-meta">' + chipsHtml + '</div>' +
-                        '<div class="game-cta"><i class="fas fa-coins" aria-hidden="true"></i> ' + go + ' →</div>' +
+                        '<div class="game-cta"><i class="fas ' + icon + '" aria-hidden="true"></i> ' + go + ' →</div>' +
                         '</div></a>'
                     );
                 }).join('');
 
-                // 향후 게임 추가를 위한 준비 중 카드 (장식용)
-                const soonLabel = lang === 'en' ? 'COMING SOON' : '준비 중';
-                const soonDesc = lang === 'en' ? 'A new arcade title is in development.' : '새 오락실 게임이 개발 중입니다.';
-                const comingSoonHtml = (
-                    '<div class="game-card coming-soon" aria-hidden="true">' +
-                    '<div class="coming-thumb">' +
-                    '<i class="fas fa-hat-wizard" aria-hidden="true"></i>' +
-                    '<span class="coming-label">' + soonLabel + '</span>' +
-                    '</div>' +
-                    '<div class="game-body">' +
-                    '<div class="en">SLOT 3</div>' +
-                    '<h3>???</h3>' +
-                    '<p>' + soonDesc + '</p>' +
-                    '</div></div>'
-                );
-
-                grid.innerHTML = cardsHtml + comingSoonHtml;
+                grid.innerHTML = cardsHtml;
             }
 
             // ===== Render character marquee =====
